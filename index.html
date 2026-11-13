@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b12">
+<title>FUTURE — Sports & Predictions</title>
+<style>
+:root{--bg:#080b12;--panel:#111722;--panel2:#151e2b;--line:#263244;--muted:#91a0b5;--text:#f4f7fb;--blue:#65a8ff;--green:#46d69a;--red:#ff7373}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 50% -180px,#172b49 0%,transparent 70%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+button,input,select{font:inherit}button{cursor:pointer}.wrap{max-width:1080px;margin:auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:8px 0 24px}.brand{font-size:28px;font-weight:950;letter-spacing:2px}.brand span{color:var(--blue)}.tag{color:var(--muted);font-size:12px}
+nav{display:flex;gap:8px;overflow:auto;padding:5px 0 14px;margin-bottom:12px}
+nav button,.subnav button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:12px;padding:10px 15px;white-space:nowrap;font-weight:700}
+nav button.active,.subnav button.active{background:#1b3554;border-color:#37699e;color:white}
+h1{font-size:27px;margin:8px 0 4px}h2{font-size:18px;margin:0 0 12px}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}
+select,input{background:#0c121c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+button.primary{background:var(--blue);color:#07111e;border:0;border-radius:10px;padding:10px 15px;font-weight:850}
+button.ghost{background:#172233;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.card{background:linear-gradient(145deg,var(--panel),#0e141e);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.cardtop{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:14px}
+.status{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.6px}
+.teamrow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;margin:12px 0}
+.team{display:flex;align-items:center;gap:10px;min-width:0;font-weight:750}
+.team img{width:30px;height:30px;object-fit:contain}.team span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.cardfoot{border-top:1px solid var(--line);margin-top:14px;padding-top:12px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pickbtn{border:1px solid var(--line);background:#172233;color:var(--text);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:750}
+.pickbtn.selected{border-color:var(--blue);background:#1b3554;color:white}
+.empty{padding:28px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted)}
+.subnav{display:flex;gap:8px;overflow:auto;margin:16px 0}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{background:#0c121c;border:1px solid var(--line);border-radius:13px;padding:14px}.stat strong{display:block;font-size:24px}.stat span{font-size:12px;color:var(--muted)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.notice{background:#172233;border:1px solid #2c4565;border-radius:12px;padding:13px;color:#c8d9ef;margin:14px 0}
+.hidden{display:none!important}.footer{margin-top:30px;color:#718096;font-size:11px;text-align:center}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.wrap{padding:14px 12px 40px}.brand{font-size:24px}h1{font-size:24px}.statgrid{gap:7px}.stat{padding:10px}.stat strong{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><div class="brand">FUTURE<span>.</span></div><div class="tag">SPORTS • PICKS • YOUR GAME</div></div><div style="text-align:right"><div class="small" id="today"></div><div class="small" id="authStatus">Not signed in</div></div></header>
+<nav id="mainnav">
+<button class="active" data-tab="sports">SPORTS</button><button data-tab="predictions">PREDICTIONS</button><button data-tab="leaderboard">LEADERBOARD</button><button data-tab="profile">PROFILE</button>
+</nav>
+<section id="sports">
+<h1>Scores & schedules</h1><div class="muted">Follow the games. Make your picks.</div>
+<div class="toolbar"><select id="sport"><option value="football/nfl">NFL</option><option value="football/college-football">College Football</option><option value="basketball/nba">NBA</option><option value="basketball/mens-college-basketball">Men's College Basketball</option><option value="baseball/mlb">MLB</option><option value="hockey/nhl">NHL</option></select><input type="date" id="date"><button class="primary" id="refresh">Refresh scores</button></div>
+<div id="scoreMessage" class="small">Loading scores…</div><div id="games" class="grid"></div>
+</section>
+<section id="predictions" class="hidden"><h1>My predictions</h1><div class="muted">Your predictions sync to your FUTURE account when signed in.</div><div class="notice">Choose a team on the Sports tab to save a prediction. Sign in to sync picks across devices.</div><div id="picklist"></div></section>
+<section id="leaderboard" class="hidden"><h1>Leaderboard</h1><div class="empty"><div style="font-size:30px">🏆</div><strong>UNDER CONSTRUCTION</strong><p>Accuracy rankings will appear here when FUTURE has a shared database and verified results.</p></div></section>
+<section id="profile" class="hidden"><h1>My profile</h1>
+<div class="card" id="accountCard"><h2>FUTURE account</h2><div class="muted" id="authMessage">Create an account or sign in to sync your profile and picks across devices.</div><div class="toolbar"><input id="email" type="email" placeholder="Email address" autocomplete="email"><input id="password" type="password" placeholder="Password" autocomplete="current-password"><button class="primary" id="signup">Create account</button><button class="ghost" id="signin">Sign in</button><button class="ghost hidden" id="signout">Sign out</button></div></div>
+<div class="card" style="margin-top:14px"><div class="small">YOUR USERNAME</div><div class="toolbar" style="margin:8px 0"><input id="username" maxlength="20" placeholder="Choose a username"><button class="primary" id="saveName">Save profile</button></div><div class="statgrid"><div class="stat"><strong id="totalPicks">0</strong><span>Total picks</span></div><div class="stat"><strong>—</strong><span>Accuracy</span></div><div class="stat"><strong>—</strong><span>Correct picks</span></div></div></div>
+<div class="subnav"><button class="active" data-sub="myprofile">MY PROFILE</button><button data-sub="friends">FRIENDS</button><button data-sub="followers">FOLLOWERS</button><button data-sub="following">FOLLOWING</button></div>
+<div id="myprofile"><h2>My picks</h2><div id="profilepicks"></div></div>
+<div id="friends" class="hidden"><h2>Friends</h2><div class="toolbar"><input id="friendname" maxlength="20" placeholder="Enter a username"><button class="primary" id="addFriend">Add friend</button></div><div id="friendlist"></div><p class="small">Find someone by their FUTURE username to follow them.</p></div>
+<div id="followers" class="hidden"><h2>Followers</h2><div id="followerlist"></div></div>
+<div id="following" class="hidden"><h2>Following</h2><div id="followinglist"></div></div>
+</section>
+<div class="footer">FUTURE • Unofficial sports companion. Scores are retrieved from ESPN's public scoreboard feeds. Not affiliated with ESPN.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://trownwzgnrauzumiuxjz.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_CZtFfxah5HIys4ubC0aphQ_LiRjDaKK';
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+const today=new Date();$('today').textContent=today.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+$('date').value=today.toLocaleDateString('en-CA');
+let games=[], picks=JSON.parse(localStorage.getItem('future_picks')||'{}'), friends=JSON.parse(localStorage.getItem('future_friends')||'[]'), currentUser=null;
+$('username').value=localStorage.getItem('future_username')||'';
+function tab(name){document.querySelectorAll('#mainnav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));['sports','predictions','leaderboard','profile'].forEach(id=>$(id).classList.toggle('hidden',id!==name));if(name==='predictions')renderPicks();if(name==='profile')renderProfile()}
+document.querySelectorAll('#mainnav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+document.querySelectorAll('.subnav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.subnav button').forEach(x=>x.classList.toggle('active',x===b));['myprofile','friends','followers','following'].forEach(id=>$(id).classList.toggle('hidden',id!==b.dataset.sub));if(b.dataset.sub==='friends')renderFriends()});
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function gameId(g){return g.id}
+function renderGames(){
+ if(!games.length){$('games').innerHTML='<div class="empty">No games found for this date. Try another date or sport.</div>';return}
+ $('games').innerHTML=games.map(g=>{const comp=g.competitions?.[0], competitors=comp?.competitors||[], away=competitors.find(t=>t.homeAway==='away')||competitors[0], home=competitors.find(t=>t.homeAway==='home')||competitors[1];if(!away||!home)return '';
+ const status=g.status?.type?.shortDetail||g.status?.type?.description||'Scheduled', state=g.status?.type?.state||'pre', pick=picks[g.id];
+ const team=(t)=>`<div class="team">${t.team?.logo?`<img src="${esc(t.team.logo)}" alt="">`:''}<span>${esc(t.team?.displayName||t.team?.name)}</span></div>`;
+ const score=t=>t?.score??'—';
+ return `<article class="card"><div class="cardtop"><span class="small">${esc(g.name||'Game')}</span><span class="status" style="color:${state==='in'? 'var(--green)':'var(--muted)'}">${esc(status)}</span></div><div class="teamrow">${team(away)}<div class="score">${esc(score(away))}</div></div><div class="teamrow">${team(home)}<div class="score">${esc(score(home))}</div></div><div class="cardfoot"><span class="small">${esc(comp.venue?.fullName||new Date(g.date).toLocaleString())}</span><div style="display:flex;gap:5px"><button class="pickbtn ${pick===away.team.displayName?'selected':''}" data-pick="${esc(g.id)}" data-team="${esc(away.team.displayName)}">${pick===away.team.displayName?'✓ ':''}Pick ${esc(away.team.abbreviation)}</button><button class="pickbtn ${pick===home.team.displayName?'selected':''}" data-pick="${esc(g.id)}" data-team="${esc(home.team.displayName)}">${pick===home.team.displayName?'✓ ':''}Pick ${esc(home.team.abbreviation)}</button></div></div></article>`}).join('');
+ document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const g=games.find(x=>x.id===b.dataset.pick);const comp=g?.competitions?.[0];const t=comp?.competitors?.find(x=>x.team?.displayName===b.dataset.team)?.team;picks[g.id]={team:b.dataset.team,game:g.name,date:g.date};localStorage.setItem('future_picks',JSON.stringify(picks));if(currentUser)savePick(g.id,picks[g.id]);renderGames();});
+}
+async function load(){
+ $('scoreMessage').textContent='Loading scores from ESPN…';$('games').innerHTML='';
+ const sport=$('sport').value,date=$('date').value.replaceAll('-','');
+ try{const url=`https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard?dates=${date}`;
+ const r=await fetch(url);if(!r.ok)throw Error('ESPN request failed');const data=await r.json();games=data.events||[];$('scoreMessage').textContent=`${games.length} game${games.length===1?'':'s'} • ${new Date($('date').value+'T12:00:00').toLocaleDateString()}`;renderGames();
+ }catch(e){$('scoreMessage').textContent='Could not load scores right now. Check your connection and try again.';$('games').innerHTML='<div class="empty">ESPN scores could not be reached. Try Refresh scores.</div>'}
+}
+$('refresh').onclick=load;$('sport').onchange=load;$('date').onchange=load;
+function renderPicks(){const entries=Object.entries(picks);$('picklist').innerHTML=entries.length?entries.map(([id,p])=>`<div class="row"><div><strong>${esc(p.team)}</strong><div class="small">${esc(p.game||'Game pick')} • ${new Date(p.date).toLocaleDateString()}</div></div><button class="ghost" data-remove="${esc(id)}">Remove</button></div>`).join(''):'<div class="empty">You have not made any picks yet.</div>';document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{delete picks[b.dataset.remove];localStorage.setItem('future_picks',JSON.stringify(picks));if(currentUser)supabase.from('picks').delete().eq('user_id',currentUser.id).eq('event_id',b.dataset.remove);renderPicks()})}
+function renderProfile(){$('totalPicks').textContent=Object.keys(picks).length;$('profilepicks').innerHTML=Object.values(picks).length?Object.values(picks).map(p=>`<div class="row"><div><strong>${esc(p.team)}</strong><div class="small">${esc(p.game||'Game pick')}</div></div><span class="small">${new Date(p.date).toLocaleDateString()}</span></div>`).join(''):'<div class="empty">Your picks will show up here.</div>';renderFriends()}
+$('saveName').onclick=async()=>{const username=$('username').value.trim().replace(/^@/,'');if(!username){alert('Choose a username first.');return}localStorage.setItem('future_username',username);if(currentUser){const {error}=await supabase.from('profiles').upsert({id:currentUser.id,username,display_name:username},{onConflict:'id'});if(error){alert('Could not save username: '+error.message);return}}$('saveName').textContent='Saved ✓';setTimeout(()=>$('saveName').textContent='Save profile',1200)};
+$('addFriend').onclick=async()=>{if(!currentUser){alert('Create an account or sign in first.');return}const n=$('friendname').value.trim().replace(/^@/,'');if(!n)return;const {data:person,error}=await supabase.from('profiles').select('id,username').ilike('username',n).maybeSingle();if(error||!person){alert('Could not find that username. Make sure they have created a FUTURE account.');return}if(person.id===currentUser.id){alert('You cannot follow yourself.');return}const {error:followError}=await supabase.from('follows').insert({follower_id:currentUser.id,followed_id:person.id});if(followError&&followError.code!=='23505'){alert('Could not follow: '+followError.message);return}$('friendname').value='';await renderFriends()};
+async function renderFollowList(container,field,filterField,buttonText){if(!currentUser){$(container).innerHTML='<div class="empty">Sign in to see this list.</div>';return}const {data:rows,error}=await supabase.from('follows').select('follower_id,followed_id').eq(filterField,currentUser.id);if(error){$(container).innerHTML='<div class="empty">Could not load list.</div>';return}const ids=(rows||[]).map(x=>x[field]);if(!ids.length){$(container).innerHTML='<div class="empty">Nobody here yet.</div>';return}const {data:people}=await supabase.from('profiles').select('id,username').in('id',ids);$(container).innerHTML=(people||[]).map(x=>`<div class="row"><strong>@${esc(x.username)}</strong>${buttonText==='Unfollow'?`<button class="ghost" data-unfollow="${x.id}">Unfollow</button>`:''}</div>`).join('');document.querySelectorAll('[data-unfollow]').forEach(b=>b.onclick=async()=>{await supabase.from('follows').delete().eq('follower_id',currentUser.id).eq('followed_id',b.dataset.unfollow);renderFriends()})}
+async function renderFriends(){if(!currentUser){$('friendlist').innerHTML='<div class="empty">Sign in to find and follow other FUTURE users.</div>';return}await renderFollowList('friendlist','followed_id','follower_id','Unfollow');await renderFollowList('followinglist','followed_id','follower_id','Unfollow');await renderFollowList('followerlist','follower_id','followed_id','');}
+async function savePick(eventId,p){const {error}=await supabase.from('picks').upsert({user_id:currentUser.id,event_id:String(eventId),event_name:p.game||'Game',selected_team:p.team,result:'pending'},{onConflict:'user_id,event_id'});if(error)console.error('Pick sync failed:',error.message)}
+async function loadCloudData(){if(!currentUser)return;const {data:profile}=await supabase.from('profiles').select('username').eq('id',currentUser.id).maybeSingle();if(profile?.username){$('username').value=profile.username;localStorage.setItem('future_username',profile.username)}else{const fallback=(currentUser.email||'player').split('@')[0].replace(/[^a-zA-Z0-9_]/g,'').slice(0,18)||'player';$('username').value=fallback;const {error}=await supabase.from('profiles').insert({id:currentUser.id,username:fallback,display_name:fallback});if(error)console.warn('Create profile:',error.message)}const {data:rows,error}=await supabase.from('picks').select('event_id,event_name,selected_team,created_at').eq('user_id',currentUser.id);if(!error){const cloud={};(rows||[]).forEach(x=>{cloud[x.event_id]={team:x.selected_team,game:x.event_name,date:x.created_at}});picks={...cloud,...picks};for(const [id,p] of Object.entries(picks))await savePick(id,p);localStorage.setItem('future_picks',JSON.stringify(picks))}renderPicks();renderProfile();renderGames()}
+async function refreshAuth(){const {data:{session}}=await supabase.auth.getSession();currentUser=session?.user||null;$('authStatus').textContent=currentUser?'Signed in: '+(currentUser.email||'account'):'Not signed in';$('authMessage').textContent=currentUser?'Your FUTURE account is connected. Picks and profile can sync across devices.':'Create an account or sign in to sync your profile and picks across devices.';$('signup').classList.toggle('hidden',!!currentUser);$('signin').classList.toggle('hidden',!!currentUser);$('signout').classList.toggle('hidden',!currentUser);$('email').classList.toggle('hidden',!!currentUser);$('password').classList.toggle('hidden',!!currentUser);if(currentUser)await loadCloudData();else{renderPicks();renderProfile()}}
+$('signup').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||password.length<6){alert('Enter an email and a password with at least 6 characters.');return}const {data,error}=await supabase.auth.signUp({email,password});if(error){alert(error.message);return}if(data.session){await refreshAuth()}else{$('authMessage').textContent='Account created! Check your email for a confirmation link, then come back and sign in.';alert('Check your email to confirm your FUTURE account.')}};
+$('signin').onclick=async()=>{const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){alert(error.message);return}await refreshAuth()};
+$('signout').onclick=async()=>{await supabase.auth.signOut();currentUser=null;await refreshAuth()};
+supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setTimeout(()=>refreshAuth(),0)});
+load();
+refreshAuth();
+</script>
+</body></html>
