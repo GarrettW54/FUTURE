@@ -111,5 +111,6 @@ $('signout').onclick=async()=>{await supabase.auth.signOut();currentUser=null;aw
 supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setTimeout(()=>refreshAuth(),0)});
 load();
 refreshAuth();
-</script>
+<script>
+(()=>{
 </body></html>
