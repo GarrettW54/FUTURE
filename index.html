@@ -112,5 +112,27 @@ supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||nu
 load();
 refreshAuth();
 </script>
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tabs = document.querySelectorAll("#mainnav button");
+
+  tabs.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const selected = button.getAttribute("data-tab");
+
+      document.querySelectorAll("#mainnav button").forEach(function (tab) {
+        tab.classList.toggle("active", tab === button);
+      });
+
+      ["sports", "predictions", "leaderboard", "profile"].forEach(function (id) {
+        const section = document.getElementById(id);
+        if (section) {
+          section.classList.toggle("hidden", id !== selected);
+        }
+      });
+    });
+  });
+});
+</script>
 </body>
 </html>
